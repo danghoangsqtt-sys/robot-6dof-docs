@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài Liệu Chuyên Sâu | Lập Trình Robot 6-DOF</title>
+    <meta name="description" content="Tài liệu hướng dẫn chuyên sâu lập trình, đi dây và tối ưu hóa chuyển động cho cánh tay robot 6 bậc tự do sử dụng ESP32 và PCA9685.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">Robotics Academy</span>
+                    <span class="logo-subtitle">Cơ điện tử & IoT</span>
+                </div>
+            </div>
+            <button class="sidebar-close" id="sidebarClose" onclick="toggleSidebar()" aria-label="Đóng sidebar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <div class="sidebar-search">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" placeholder="Tìm kiếm nội dung..." id="searchInput" oninput="filterSidebar(this.value)">
+        </div>
+
+        <nav class="sidebar-nav" id="sidebarNav">
+            <div class="nav-group">
+                <div class="nav-group-label">Tổng quan</div>
+                <a href="#hero" class="nav-item active" data-section="hero">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-text">Giới thiệu</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-label">Phần cứng</div>
+                <a href="#hardware" class="nav-item" data-section="hardware">
+                    <span class="nav-icon">🔧</span>
+                    <span class="nav-text">Phân tích Phần cứng</span>
+                </a>
+                <a href="#power-warning" class="nav-item" data-section="power-warning">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-text">Cảnh báo Nguồn điện</span>
+                </a>
+                <a href="#wiring" class="nav-item" data-section="wiring">
+                    <span class="nav-icon">🔌</span>
+                    <span class="nav-text">Sơ đồ Đấu dây</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-label">Phần mềm</div>
+                <a href="#source-code" class="nav-item" data-section="source-code">
+                    <span class="nav-icon">💻</span>
+                    <span class="nav-text">Mã nguồn điều khiển</span>
+                </a>
+                <a href="#code-explanation" class="nav-item" data-section="code-explanation">
+                    <span class="nav-icon">📖</span>
+                    <span class="nav-text">Giải thích mã nguồn</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-group-label">Hỗ trợ</div>
+                <a href="#troubleshooting" class="nav-item" data-section="troubleshooting">
+                    <span class="nav-icon">🛠️</span>
+                    <span class="nav-text">Gỡ lỗi (Troubleshooting)</span>
+                </a>
+                <a href="#references" class="nav-item" data-section="references">
+                    <span class="nav-icon">📚</span>
+                    <span class="nav-text">Tài liệu tham khảo</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span>Tiến độ đọc</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper" id="mainWrapper">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" aria-label="Mở sidebar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+            <div class="topbar-breadcrumb">
+                <span class="breadcrumb-label">Tài liệu</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                <span class="breadcrumb-current" id="currentSection">Giới thiệu</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="topbar-btn" onclick="toggleTheme()" title="Đổi chế độ sáng/tối" aria-label="Đổi theme">
+                    <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+                </button>
+                <button class="topbar-btn" onclick="printDoc()" title="In tài liệu" aria-label="In tài liệu">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Scroll Area -->
+        <main class="content" id="contentArea">
+
+            <!-- SECTION: Hero / Giới thiệu -->
+            <section id="hero" class="doc-section">
+                <div class="hero-card">
+                    <div class="hero-badge">Phiên bản 2.0 — DHsystem 2026</div>
+                    <h1 class="hero-title">Điều Khiển Cánh Tay Robot <span class="gradient-text">6-DOF</span></h1>
+                    <p class="hero-desc">Tài liệu hướng dẫn chuyên sâu về lập trình, đi dây và tối ưu hóa chuyển động cho cánh tay robot 6 bậc tự do sử dụng mạch <strong>ESP32</strong> và chip băm xung <strong>PCA9685</strong>.</p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">6</span>
+                            <span class="stat-label">Bậc tự do</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">12-bit</span>
+                            <span class="stat-label">Độ phân giải PWM</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">16</span>
+                            <span class="stat-label">Kênh PWM</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">I²C</span>
+                            <span class="stat-label">Giao thức</span>
+                        </div>
+                    </div>
+                    <div class="hero-tags">
+                        <span class="tag">ESP32</span>
+                        <span class="tag">PCA9685</span>
+                        <span class="tag">Arduino C++</span>
+                        <span class="tag">Servo PWM</span>
+                        <span class="tag">Smooth Movement</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Phân tích Phần cứng -->
+            <section id="hardware" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">1</span>
+                    <div>
+                        <h2 class="section-title">Phân tích Phần cứng</h2>
+                        <p class="section-subtitle">Các thành phần cốt lõi của hệ thống robot</p>
+                    </div>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="hw-card">
+                        <div class="hw-card-img">
+                            <img src="images/esp32.png" alt="ESP32 Development Board" loading="lazy">
+                        </div>
+                        <h3 class="hw-card-title">ESP32</h3>
+                        <p class="hw-card-desc">Vi xử lý trung tâm, logic 3.3V, tích hợp Wifi/BT. Cấp lệnh điều khiển qua giao tiếp I2C.</p>
+                        <div class="hw-card-specs">
+                            <span class="spec">Xtensa LX6</span>
+                            <span class="spec">240MHz</span>
+                            <span class="spec">3.3V</span>
+                        </div>
+                    </div>
+
+                    <div class="hw-card">
+                        <div class="hw-card-img">
+                            <img src="images/pca9685.png" alt="PCA9685 PWM Servo Driver" loading="lazy">
+                        </div>
+                        <h3 class="hw-card-title">PCA9685</h3>
+                        <p class="hw-card-desc">IC chuyên dụng băm xung PWM 12-bit, điều khiển mượt mà 16 kênh Servo đồng thời.</p>
+                        <div class="hw-card-specs">
+                            <span class="spec">12-bit PWM</span>
+                            <span class="spec">16 kênh</span>
+                            <span class="spec">I²C</span>
+                        </div>
+                    </div>
+
+                    <div class="hw-card">
+                        <div class="hw-card-img">
+                            <img src="images/robot_arm.png" alt="Cánh tay Robot 6-DOF" loading="lazy">
+                        </div>
+                        <h3 class="hw-card-title">6 Động cơ Servo</h3>
+                        <p class="hw-card-desc">6 Servo tiêu chuẩn tạo nên 6 khớp: Đế, Vai, Khuỷu, Cổ tay gập, Cổ tay xoay, Kẹp.</p>
+                        <div class="hw-card-specs">
+                            <span class="spec">0°–180°</span>
+                            <span class="spec">50Hz</span>
+                            <span class="spec">5V DC</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Joint diagram -->
+                <div class="info-box">
+                    <div class="info-box-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        <span>Bảng ánh xạ khớp → kênh servo</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="doc-table">
+                            <thead>
+                                <tr>
+                                    <th>Kênh PCA9685</th>
+                                    <th>Tên khớp</th>
+                                    <th>Mô tả chuyển động</th>
+                                    <th>Phạm vi góc</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>0</code></td><td>Đế (Base)</td><td>Xoay toàn bộ cánh tay</td><td>0° – 180°</td></tr>
+                                <tr><td><code>1</code></td><td>Vai (Shoulder)</td><td>Nâng/hạ cánh tay</td><td>15° – 165°</td></tr>
+                                <tr><td><code>2</code></td><td>Khuỷu (Elbow)</td><td>Gập/duỗi cánh tay</td><td>0° – 180°</td></tr>
+                                <tr><td><code>3</code></td><td>Cổ tay gập (Wrist Pitch)</td><td>Nghiêng đầu kẹp</td><td>0° – 180°</td></tr>
+                                <tr><td><code>4</code></td><td>Cổ tay xoay (Wrist Roll)</td><td>Xoay đầu kẹp</td><td>0° – 180°</td></tr>
+                                <tr><td><code>5</code></td><td>Kẹp (Gripper)</td><td>Mở/đóng kẹp</td><td>30° – 150°</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Cảnh báo Nguồn điện -->
+            <section id="power-warning" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number warning">⚠</span>
+                    <div>
+                        <h2 class="section-title">Cảnh báo Nguồn điện</h2>
+                        <p class="section-subtitle">Thông tin an toàn quan trọng – BẮT BUỘC đọc</p>
+                    </div>
+                </div>
+
+                <div class="danger-card">
+                    <div class="danger-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+                    </div>
+                    <div class="danger-content">
+                        <h3>KHÔNG sử dụng nguồn 5V từ ESP32 cho Servo</h3>
+                        <p>Tuyệt đối <strong>KHÔNG</strong> sử dụng nguồn 5V từ chân ESP32 để nuôi trực tiếp Servo. Dòng tải quá lớn (mỗi servo có thể kéo 500mA–2A) sẽ làm mạch bị <strong>cháy</strong> hoặc <strong>reset liên tục</strong>.</p>
+                    </div>
+                </div>
+
+                <div class="solution-card">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                        Giải pháp đúng
+                    </h3>
+                    <p>Cấp nguồn DC <strong>5V ngoài</strong> (nguồn tổ ong hoặc adapter công suất <strong>5A–10A</strong>) trực tiếp vào Domino màu xanh lá (<code>V+</code> và <code>GND</code>) trên mạch PCA9685.</p>
+                    <div class="solution-diagram">
+                        <div class="diagram-node power">Nguồn 5V / 5A–10A</div>
+                        <div class="diagram-arrow">→</div>
+                        <div class="diagram-node pca">PCA9685 (V+ / GND)</div>
+                        <div class="diagram-arrow">→</div>
+                        <div class="diagram-node servo">6× Servo</div>
+                    </div>
+                    <div class="solution-note">
+                        <strong>Lưu ý:</strong> Nối chung GND giữa nguồn ngoài, PCA9685 và ESP32 để tín hiệu PWM hoạt động ổn định.
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Sơ đồ Đấu dây -->
+            <section id="wiring" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">2</span>
+                    <div>
+                        <h2 class="section-title">Sơ đồ Đấu dây (I2C)</h2>
+                        <p class="section-subtitle">Kết nối giao tiếp giữa ESP32 và PCA9685</p>
+                    </div>
+                </div>
+
+                <div class="wiring-container">
+                    <div class="wiring-card">
+                        <div class="wiring-header">Kết nối I2C — Logic & Nguồn IC</div>
+                        <div class="wiring-rows">
+                            <div class="wire-row">
+                                <div class="wire-from">
+                                    <span class="chip-badge pca">PCA9685</span>
+                                    <code>SCL</code>
+                                </div>
+                                <div class="wire-line">
+                                    <div class="wire-dot"></div>
+                                    <div class="wire-dash scl"></div>
+                                    <div class="wire-dot"></div>
+                                </div>
+                                <div class="wire-to">
+                                    <span class="chip-badge esp">ESP32</span>
+                                    <code>GPIO 22</code>
+                                </div>
+                            </div>
+                            <div class="wire-row">
+                                <div class="wire-from">
+                                    <span class="chip-badge pca">PCA9685</span>
+                                    <code>SDA</code>
+                                </div>
+                                <div class="wire-line">
+                                    <div class="wire-dot"></div>
+                                    <div class="wire-dash sda"></div>
+                                    <div class="wire-dot"></div>
+                                </div>
+                                <div class="wire-to">
+                                    <span class="chip-badge esp">ESP32</span>
+                                    <code>GPIO 21</code>
+                                </div>
+                            </div>
+                            <div class="wire-row">
+                                <div class="wire-from">
+                                    <span class="chip-badge pca">PCA9685</span>
+                                    <code>VCC</code>
+                                </div>
+                                <div class="wire-line">
+                                    <div class="wire-dot"></div>
+                                    <div class="wire-dash vcc"></div>
+                                    <div class="wire-dot"></div>
+                                </div>
+                                <div class="wire-to">
+                                    <span class="chip-badge esp">ESP32</span>
+                                    <code>3V3</code>
+                                </div>
+                            </div>
+                            <div class="wire-row">
+                                <div class="wire-from">
+                                    <span class="chip-badge pca">PCA9685</span>
+                                    <code>GND</code>
+                                </div>
+                                <div class="wire-line">
+                                    <div class="wire-dot"></div>
+                                    <div class="wire-dash gnd"></div>
+                                    <div class="wire-dot"></div>
+                                </div>
+                                <div class="wire-to">
+                                    <span class="chip-badge esp">ESP32</span>
+                                    <code>GND</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-box compact">
+                        <div class="info-box-header">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                            <span>Mẹo hay</span>
+                        </div>
+                        <p>Địa chỉ I2C mặc định của PCA9685 là <code>0x40</code>. Bạn có thể thay đổi bằng cách hàn các jumper A0–A5 trên board để sử dụng nhiều PCA9685 cùng lúc (lên đến 62 board = 992 servo!).</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Mã nguồn -->
+            <section id="source-code" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">3</span>
+                    <div>
+                        <h2 class="section-title">Mã nguồn điều khiển</h2>
+                        <p class="section-subtitle">C++ Arduino — Tích hợp thuật toán Smooth Movement</p>
+                    </div>
+                </div>
+
+                <div class="code-requirements">
+                    <h4>📦 Thư viện yêu cầu</h4>
+                    <div class="req-list">
+                        <div class="req-item">
+                            <code>Wire.h</code>
+                            <span class="req-note">Có sẵn trong Arduino Core</span>
+                        </div>
+                        <div class="req-item">
+                            <code>Adafruit_PWMServoDriver.h</code>
+                            <span class="req-note">Cài qua Library Manager → tìm "Adafruit PWM Servo Driver"</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-file-info">
+                            <span class="code-dot"></span>
+                            <span class="code-filename">main.cpp</span>
+                            <span class="code-lang">C++ / Arduino</span>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode()" id="copyBtn" title="Copy to clipboard">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                    <pre class="code-content"><code class="language-cpp" id="cppCode">/*
+ * TÊN DỰ ÁN: ĐIỀU KHIỂN CÁNH TAY ROBOT 6 TRỤC VỚI ESP32 VÀ PCA9685
+ * PHIÊN BẢN: 2.0 (Hỗ trợ di chuyển mượt - Smooth Movement)
+ */
+
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_PWMServoDriver.h&gt;
+
+// Khởi tạo PCA9685 tại địa chỉ mặc định 0x40
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
+
+// Định nghĩa thông số PWM cho RC Servo (50Hz = Chu kỳ 20ms)
+#define SERVO_FREQ 50 
+#define SERVOMIN  150 // Nhịp xung cho 0 độ (khoảng 1ms)
+#define SERVOMAX  600 // Nhịp xung cho 180 độ (khoảng 2ms)
+
+// Mảng nhớ góc hiện tại của 6 khớp (Khởi tạo ở 90 độ)
+int currentAngles[6] = {90, 90, 90, 90, 90, 90}; 
+
+// Hàm ánh xạ góc (0-180) sang giá trị băm xung
+int angleToPulse(int angle) {
+  return map(angle, 0, 180, SERVOMIN, SERVOMAX);
+}
+
+// HÀM QUAN TRỌNG: Di chuyển mượt mà tránh gãy bánh răng
+void moveSmoothly(int jointIndex, int targetAngle, int speedDelay) {
+  int currentAngle = currentAngles[jointIndex];
+  
+  if (currentAngle &lt; targetAngle) {
+    for (int a = currentAngle; a &lt;= targetAngle; a++) {
+      pwm.setPWM(jointIndex, 0, angleToPulse(a));
+      delay(speedDelay);
+    }
+  } else if (currentAngle &gt; targetAngle) {
+    for (int a = currentAngle; a &gt;= targetAngle; a--) {
+      pwm.setPWM(jointIndex, 0, angleToPulse(a));
+      delay(speedDelay);
+    }
+  }
+  currentAngles[jointIndex] = targetAngle; // Cập nhật bộ nhớ
+}
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("Khoi dong he thong...");
+
+  pwm.begin();
+  pwm.setOscillatorFrequency(27000000);
+  pwm.setPWMFreq(SERVO_FREQ);
+  delay(10);
+  
+  // Set vị trí cân bằng gốc
+  for (int i = 0; i &lt; 6; i++) {
+    pwm.setPWM(i, 0, angleToPulse(90));
+    currentAngles[i] = 90;
+  }
+  delay(2000);
+}
+
+void loop() {
+  // VD 1: Khớp 0 (Đế) quay từ 90 -> 45 -> 135 -> 90
+  Serial.println("Quay de...");
+  moveSmoothly(0, 45, 15);
+  delay(500);
+  moveSmoothly(0, 135, 15);
+  delay(500);
+  moveSmoothly(0, 90, 15);
+  delay(1000);
+
+  // VD 2: Kết hợp Vai (1) và Khuỷu (2)
+  Serial.println("Gap canh tay...");
+  moveSmoothly(1, 45, 20);
+  moveSmoothly(2, 120, 20);
+  delay(1000);
+  
+  // Trở về
+  moveSmoothly(2, 90, 20);
+  moveSmoothly(1, 90, 20);
+  delay(2000);
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- SECTION: Giải thích mã nguồn -->
+            <section id="code-explanation" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">4</span>
+                    <div>
+                        <h2 class="section-title">Giải thích mã nguồn</h2>
+                        <p class="section-subtitle">Phân tích chi tiết từng phần trong chương trình</p>
+                    </div>
+                </div>
+
+                <div class="explanation-grid">
+                    <div class="explain-card">
+                        <div class="explain-num">01</div>
+                        <h4>Khởi tạo PCA9685</h4>
+                        <p>Đối tượng <code>pwm</code> được khởi tạo với địa chỉ I2C <code>0x40</code>. Hàm <code>pwm.begin()</code> khởi động IC, sau đó cài đặt tần số dao động nội bộ (<code>27MHz</code>) và tần số xung PWM (<code>50Hz</code>) phù hợp với servo RC tiêu chuẩn.</p>
+                    </div>
+
+                    <div class="explain-card">
+                        <div class="explain-num">02</div>
+                        <h4>Hằng số SERVOMIN / SERVOMAX</h4>
+                        <p>Giá trị <code>150</code> và <code>600</code> là các giá trị "tick" trong chu kỳ 12-bit (0–4095) của PCA9685, tương ứng với độ rộng xung ~1ms và ~2ms — là phạm vi điều khiển chuẩn cho servo 0°–180°.</p>
+                    </div>
+
+                    <div class="explain-card">
+                        <div class="explain-num">03</div>
+                        <h4>Hàm angleToPulse()</h4>
+                        <p>Sử dụng hàm <code>map()</code> chuẩn Arduino để ánh xạ tuyến tính giá trị góc (0–180) sang dải xung (SERVOMIN–SERVOMAX), giúp gọi lệnh servo bằng đơn vị "độ" thay vì tick thô.</p>
+                    </div>
+
+                    <div class="explain-card highlight">
+                        <div class="explain-num">04</div>
+                        <h4>Hàm moveSmoothly() ⭐</h4>
+                        <p>Đây là <strong>hàm cốt lõi</strong>. Thay vì nhảy trực tiếp đến góc đích, nó di chuyển từng bước 1° với khoảng dừng <code>speedDelay</code> ms. Điều này tạo chuyển động mượt mà, giảm tải cơ khí cho bánh răng servo và tránh rung giật.</p>
+                    </div>
+
+                    <div class="explain-card">
+                        <div class="explain-num">05</div>
+                        <h4>Mảng currentAngles[]</h4>
+                        <p>Bộ nhớ trạng thái lưu góc hiện tại của tất cả 6 khớp. Khi gọi <code>moveSmoothly()</code>, hàm đọc góc hiện tại từ mảng này để biết vị trí xuất phát, rồi cập nhật lại sau khi di chuyển xong.</p>
+                    </div>
+
+                    <div class="explain-card">
+                        <div class="explain-num">06</div>
+                        <h4>Vòng lặp loop()</h4>
+                        <p>Chứa hai kịch bản demo: khớp Đế quay qua lại (45° → 135° → 90°), và kết hợp khớp Vai + Khuỷu để mô phỏng động tác "gập cánh tay". Có thể mở rộng thêm kịch bản tùy ý.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Troubleshooting -->
+            <section id="troubleshooting" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">5</span>
+                    <div>
+                        <h2 class="section-title">Kỹ năng Gỡ lỗi</h2>
+                        <p class="section-subtitle">Troubleshooting — Các sự cố thường gặp và cách khắc phục</p>
+                    </div>
+                </div>
+
+                <div class="trouble-list">
+                    <details class="trouble-item" open>
+                        <summary class="trouble-summary">
+                            <span class="trouble-status error">LỖI</span>
+                            <span>Lỗi "Failed to connect to ESP32"</span>
+                            <svg class="trouble-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </summary>
+                        <div class="trouble-content">
+                            <p><strong>Nguyên nhân:</strong> ESP32 không vào chế độ bootloader để nhận firmware.</p>
+                            <p><strong>Giải pháp:</strong> Nhấn và <strong>giữ nút BOOT</strong> trên mạch ESP32 khi Arduino IDE báo dòng chữ <kbd>Connecting...</kbd>. Giữ cho đến khi quá trình upload bắt đầu.</p>
+                        </div>
+                    </details>
+
+                    <details class="trouble-item">
+                        <summary class="trouble-summary">
+                            <span class="trouble-status warning">CẢNH BÁO</span>
+                            <span>Serial Monitor hiển thị ký tự rác / reset liên tục</span>
+                            <svg class="trouble-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </summary>
+                        <div class="trouble-content">
+                            <p><strong>Nguyên nhân:</strong> Hiện tượng sụt áp (<strong>Brownout</strong>). Vi điều khiển tự reset để bảo vệ mạch.</p>
+                            <p><strong>Giải pháp:</strong></p>
+                            <ul>
+                                <li>Kiểm tra nguồn nuôi Servo — phải dùng nguồn ngoài chuyên dụng</li>
+                                <li>Đảm bảo <strong>GND</strong> của nguồn ngoài và GND của ESP32 được <strong>nối chung</strong></li>
+                                <li>Kiểm tra baud rate Serial Monitor = <code>115200</code></li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    <details class="trouble-item">
+                        <summary class="trouble-summary">
+                            <span class="trouble-status critical">NGUY HIỂM</span>
+                            <span>Động cơ kêu "è è" và nóng lên</span>
+                            <svg class="trouble-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </summary>
+                        <div class="trouble-content">
+                            <p><strong>Nguyên nhân:</strong> Khớp cơ khí đang bị kẹt, hoặc góc quay được lập trình vượt quá giới hạn vật lý của trục.</p>
+                            <p><strong>Giải pháp:</strong></p>
+                            <ul>
+                                <li><strong>NGẮT ĐIỆN NGAY</strong> để tránh cháy servo</li>
+                                <li>Kiểm tra và sửa lại thông số <code>targetAngle</code></li>
+                                <li>Điều chỉnh giới hạn góc trong code trước khi upload lại</li>
+                                <li>Kiểm tra khớp cơ khí xem có bị vướng/kẹt không</li>
+                            </ul>
+                        </div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- SECTION: Tài liệu tham khảo -->
+            <section id="references" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">6</span>
+                    <div>
+                        <h2 class="section-title">Tài liệu tham khảo</h2>
+                        <p class="section-subtitle">Các nguồn tài liệu bổ sung và link hữu ích</p>
+                    </div>
+                </div>
+
+                <div class="ref-grid">
+                    <a href="https://docs.espressif.com/projects/esp-idf/en/latest/esp32/" target="_blank" class="ref-card">
+                        <div class="ref-icon">📄</div>
+                        <div class="ref-info">
+                            <h4>ESP32 Official Docs</h4>
+                            <p>Tài liệu kỹ thuật chính thức từ Espressif</p>
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                    </a>
+                    <a href="https://www.nxp.com/docs/en/data-sheet/PCA9685.pdf" target="_blank" class="ref-card">
+                        <div class="ref-icon">📋</div>
+                        <div class="ref-info">
+                            <h4>PCA9685 Datasheet</h4>
+                            <p>Datasheet chính thức từ NXP Semiconductors</p>
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                    </a>
+                    <a href="https://github.com/adafruit/Adafruit-PWM-Servo-Driver-Library" target="_blank" class="ref-card">
+                        <div class="ref-icon">🔗</div>
+                        <div class="ref-info">
+                            <h4>Adafruit PWM Servo Driver Library</h4>
+                            <p>Mã nguồn thư viện Arduino trên GitHub</p>
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                    </a>
+                    <a href="https://www.arduino.cc/reference/en/" target="_blank" class="ref-card">
+                        <div class="ref-icon">📘</div>
+                        <div class="ref-info">
+                            <h4>Arduino Language Reference</h4>
+                            <p>Tham khảo ngôn ngữ lập trình Arduino</p>
+                        </div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="doc-footer">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <span class="footer-logo">Robotics Academy</span>
+                        <span class="footer-divider">·</span>
+                        <span>Cơ điện tử & IoT</span>
+                    </div>
+                    <p>Tài liệu nội bộ định dạng E-learning. Tối ưu cho giảng dạy STEM và Robotics.</p>
+                    <p class="footer-copy">© 2026 DHsystem — Được tạo phục vụ mục đích giáo dục</p>
+                </div>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        // ======== Highlight.js Init ========
+        hljs.highlightAll();
+
+        // ======== Sidebar Toggle ========
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const wrapper = document.getElementById('mainWrapper');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('visible');
+        }
+
+        // ======== Copy Code ========
+        function copyCode() {
+            const codeText = document.getElementById('cppCode').innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.classList.add('copied');
+                btn.querySelector('span').textContent = 'Đã copy ✓';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.querySelector('span').textContent = 'Copy';
+                }, 2000);
+            }).catch(err => {
+                console.error('Copy failed', err);
+            });
+        }
+
+        // ======== Active Section Tracking ========
+        const sections = document.querySelectorAll('.doc-section');
+        const navItems = document.querySelectorAll('.nav-item');
+        const breadcrumbCurrent = document.getElementById('currentSection');
+
+        const sectionNames = {
+            'hero': 'Giới thiệu',
+            'hardware': 'Phân tích Phần cứng',
+            'power-warning': 'Cảnh báo Nguồn điện',
+            'wiring': 'Sơ đồ Đấu dây',
+            'source-code': 'Mã nguồn điều khiển',
+            'code-explanation': 'Giải thích mã nguồn',
+            'troubleshooting': 'Gỡ lỗi',
+            'references': 'Tài liệu tham khảo'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+                    navItems.forEach(item => {
+                        item.classList.toggle('active', item.dataset.section === id);
+                    });
+                    breadcrumbCurrent.textContent = sectionNames[id] || id;
+                }
+            });
+        }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+        sections.forEach(section => observer.observe(section));
+
+        // ======== Smooth Scroll for nav links ========
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.getElementById(item.dataset.section);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Close sidebar on mobile
+                    if (window.innerWidth < 1024) {
+                        toggleSidebar();
+                    }
+                }
+            });
+        });
+
+        // ======== Reading Progress ========
+        const contentArea = document.getElementById('contentArea');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+
+        contentArea.addEventListener('scroll', () => {
+            const scrollTop = contentArea.scrollTop;
+            const scrollHeight = contentArea.scrollHeight - contentArea.clientHeight;
+            const progress = Math.min((scrollTop / scrollHeight) * 100, 100);
+            progressFill.style.width = progress + '%';
+            progressPercent.textContent = Math.round(progress) + '%';
+        });
+
+        // ======== Theme Toggle ========
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            const icon = document.getElementById('themeIcon');
+            if (document.body.classList.contains('dark-theme')) {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Restore theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            document.getElementById('themeIcon').innerHTML = '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+        }
+
+        // ======== Sidebar Search ========
+        function filterSidebar(query) {
+            const q = query.toLowerCase().trim();
+            navItems.forEach(item => {
+                const text = item.querySelector('.nav-text').textContent.toLowerCase();
+                item.style.display = q === '' || text.includes(q) ? '' : 'none';
+            });
+        }
+
+        // ======== Print ========
+        function printDoc() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
