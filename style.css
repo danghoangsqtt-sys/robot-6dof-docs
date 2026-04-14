@@ -1399,6 +1399,188 @@ kbd {
 }
 
 /* ============================================
+   KNOWLEDGE / FUNDAMENTALS
+   ============================================ */
+.knowledge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.knowledge-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    transition: var(--transition);
+}
+
+.knowledge-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.knowledge-icon {
+    font-size: 1.6rem;
+    margin-bottom: 12px;
+}
+
+.knowledge-card h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--color-text);
+}
+
+.knowledge-card p {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+}
+
+/* PWM visual bars */
+.pwm-visual {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.pwm-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 20px;
+    background: var(--color-bg);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.pwm-high {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+    border-radius: 4px 0 0 4px;
+    min-width: 4px;
+}
+
+.pwm-label {
+    font-size: 0.68rem;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    padding-left: 8px;
+    white-space: nowrap;
+}
+
+/* ============================================
+   DIAGRAM IMAGE CARD
+   ============================================ */
+.diagram-image-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.diagram-image-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: var(--color-primary-ghost);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-primary-dark);
+}
+
+.dark-theme .diagram-image-header {
+    color: var(--color-primary);
+}
+
+.diagram-image-body {
+    padding: 20px;
+    text-align: center;
+    background: var(--color-bg);
+}
+
+.diagram-image-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   VIDEO TUTORIALS
+   ============================================ */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.video-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.video-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    height: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.video-info {
+    padding: 16px 20px;
+}
+
+.video-info h4 {
+    font-size: 0.92rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.video-info p {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin-bottom: 8px;
+}
+
+.video-channel {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: var(--color-primary-ghost);
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid var(--color-primary-light);
+}
+
+/* ============================================
    FOOTER
    ============================================ */
 .doc-footer {
@@ -1541,6 +1723,14 @@ kbd {
     }
 
     .ref-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .knowledge-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .video-grid {
         grid-template-columns: 1fr;
     }
 

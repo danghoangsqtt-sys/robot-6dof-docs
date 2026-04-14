@@ -50,6 +50,10 @@
                     <span class="nav-icon">🏠</span>
                     <span class="nav-text">Giới thiệu</span>
                 </a>
+                <a href="#fundamentals" class="nav-item" data-section="fundamentals">
+                    <span class="nav-icon">🎓</span>
+                    <span class="nav-text">Kiến thức nền</span>
+                </a>
             </div>
 
             <div class="nav-group">
@@ -58,13 +62,17 @@
                     <span class="nav-icon">🔧</span>
                     <span class="nav-text">Phân tích Phần cứng</span>
                 </a>
+                <a href="#servo-wiring" class="nav-item" data-section="servo-wiring">
+                    <span class="nav-icon">🦾</span>
+                    <span class="nav-text">Sơ đồ nối Servo ↔ PCA</span>
+                </a>
                 <a href="#power-warning" class="nav-item" data-section="power-warning">
                     <span class="nav-icon">⚡</span>
                     <span class="nav-text">Cảnh báo Nguồn điện</span>
                 </a>
                 <a href="#wiring" class="nav-item" data-section="wiring">
                     <span class="nav-icon">🔌</span>
-                    <span class="nav-text">Sơ đồ Đấu dây</span>
+                    <span class="nav-text">Sơ đồ Đấu dây I2C</span>
                 </a>
             </div>
 
@@ -85,6 +93,10 @@
                 <a href="#troubleshooting" class="nav-item" data-section="troubleshooting">
                     <span class="nav-icon">🛠️</span>
                     <span class="nav-text">Gỡ lỗi (Troubleshooting)</span>
+                </a>
+                <a href="#video-tutorials" class="nav-item" data-section="video-tutorials">
+                    <span class="nav-icon">🎬</span>
+                    <span class="nav-text">Video hướng dẫn</span>
                 </a>
                 <a href="#references" class="nav-item" data-section="references">
                     <span class="nav-icon">📚</span>
@@ -161,6 +173,69 @@
                         <span class="tag">Arduino C++</span>
                         <span class="tag">Servo PWM</span>
                         <span class="tag">Smooth Movement</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Kiến thức nền -->
+            <section id="fundamentals" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">✦</span>
+                    <div>
+                        <h2 class="section-title">Kiến thức nền tảng</h2>
+                        <p class="section-subtitle">Những khái niệm cốt lõi cần nắm trước khi bắt đầu</p>
+                    </div>
+                </div>
+
+                <div class="knowledge-grid">
+                    <div class="knowledge-card">
+                        <div class="knowledge-icon">📐</div>
+                        <h4>DOF — Bậc tự do</h4>
+                        <p><strong>Degree of Freedom (DOF)</strong> là số trục mà robot có thể di chuyển độc lập. Robot 6-DOF có 6 khớp xoay, cho phép đầu kẹp tiếp cận vật thể từ hầu hết mọi hướng trong không gian 3D. Mỗi DOF tương ứng với 1 động cơ servo.</p>
+                    </div>
+
+                    <div class="knowledge-card">
+                        <div class="knowledge-icon">〜</div>
+                        <h4>PWM — Điều chế độ rộng xung</h4>
+                        <p><strong>Pulse Width Modulation</strong> là kỹ thuật điều khiển bằng cách thay đổi <em>độ rộng xung</em> trong chu kỳ cố định. Servo RC tiêu chuẩn hoạt động ở <code>50Hz</code> (chu kỳ 20ms), trong đó xung <code>1ms</code> = 0°, xung <code>1.5ms</code> = 90°, xung <code>2ms</code> = 180°.</p>
+                        <div class="pwm-visual">
+                            <div class="pwm-bar">
+                                <div class="pwm-high" style="width:5%"></div>
+                                <span class="pwm-label">1ms → 0°</span>
+                            </div>
+                            <div class="pwm-bar">
+                                <div class="pwm-high" style="width:7.5%"></div>
+                                <span class="pwm-label">1.5ms → 90°</span>
+                            </div>
+                            <div class="pwm-bar">
+                                <div class="pwm-high" style="width:10%"></div>
+                                <span class="pwm-label">2ms → 180°</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="knowledge-card">
+                        <div class="knowledge-icon">🔗</div>
+                        <h4>I²C — Giao thức truyền thông</h4>
+                        <p><strong>Inter-Integrated Circuit</strong> là bus nối tiếp 2 dây (SDA + SCL) cho phép 1 master (ESP32) giao tiếp với nhiều slave (PCA9685). Mỗi thiết bị có địa chỉ duy nhất (PCA9685 mặc định: <code>0x40</code>). Tốc độ chuẩn: 100kHz–400kHz.</p>
+                    </div>
+
+                    <div class="knowledge-card">
+                        <div class="knowledge-icon">⚙️</div>
+                        <h4>Servo RC — Động cơ vị trí</h4>
+                        <p>Servo RC là động cơ tích hợp <strong>mạch phản hồi vị trí</strong>, cho phép quay chính xác đến góc mong muốn (0°–180°). Mỗi servo có 3 dây: <span style="color:var(--color-danger)">●</span> Đỏ (V+), <span style="color:#333">●</span> Nâu/Đen (GND), <span style="color:var(--color-warning)">●</span> Vàng/Cam (Tín hiệu PWM).</p>
+                    </div>
+
+                    <div class="knowledge-card">
+                        <div class="knowledge-icon">🧮</div>
+                        <h4>12-bit Resolution — Độ phân giải</h4>
+                        <p>PCA9685 sử dụng bộ đếm 12-bit (0–4095 tick) cho mỗi chu kỳ PWM. Với servo 180°, mỗi tick ≈ <code>0.044°</code>, cho phép điều khiển cực kỳ mịn so với PWM thông thường 8-bit (256 bước = 0.7°/bước).</p>
+                    </div>
+
+                    <div class="knowledge-card">
+                        <div class="knowledge-icon">🔄</div>
+                        <h4>Smooth Movement — Chuyển động mượt</h4>
+                        <p>Thay vì nhảy đột ngột từ góc A sang góc B (gây <strong>shock cơ khí</strong>), thuật toán chia thành nhiều bước nhỏ 1° với delay giữa mỗi bước. Điều này bảo vệ bánh răng servo và tạo chuyển động tự nhiên hơn.</p>
                     </div>
                 </div>
             </section>
@@ -242,6 +317,65 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </section>
+
+            <!-- SECTION: Sơ đồ kết nối Servo ↔ PCA9685 -->
+            <section id="servo-wiring" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">2</span>
+                    <div>
+                        <h2 class="section-title">Sơ đồ kết nối Robot ↔ PCA9685</h2>
+                        <p class="section-subtitle">Cách nối 6 servo của cánh tay robot vào board PCA9685</p>
+                    </div>
+                </div>
+
+                <!-- Wiring Diagram Image -->
+                <div class="diagram-image-card">
+                    <div class="diagram-image-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                        <span>Sơ đồ tổng thể kết nối hệ thống</span>
+                    </div>
+                    <div class="diagram-image-body">
+                        <img src="images/wiring_diagram.png" alt="Sơ đồ kết nối ESP32 - PCA9685 - 6 Servo" loading="lazy">
+                    </div>
+                </div>
+
+                <!-- Servo Pin Table -->
+                <div class="info-box" style="margin-top: 24px;">
+                    <div class="info-box-header">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        <span>Cách cắm dây Servo vào PCA9685</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="doc-table">
+                            <thead>
+                                <tr>
+                                    <th>Kênh PCA</th>
+                                    <th>Khớp Robot</th>
+                                    <th>Dây Vàng (Signal)</th>
+                                    <th>Dây Đỏ (V+)</th>
+                                    <th>Dây Nâu (GND)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><code>CH0</code></td><td>Đế (Base)</td><td>Hàng PWM — chân 0</td><td>Hàng V+ (nguồn ngoài)</td><td>Hàng GND</td></tr>
+                                <tr><td><code>CH1</code></td><td>Vai (Shoulder)</td><td>Hàng PWM — chân 1</td><td>Hàng V+</td><td>Hàng GND</td></tr>
+                                <tr><td><code>CH2</code></td><td>Khuỷu (Elbow)</td><td>Hàng PWM — chân 2</td><td>Hàng V+</td><td>Hàng GND</td></tr>
+                                <tr><td><code>CH3</code></td><td>Cổ tay gập</td><td>Hàng PWM — chân 3</td><td>Hàng V+</td><td>Hàng GND</td></tr>
+                                <tr><td><code>CH4</code></td><td>Cổ tay xoay</td><td>Hàng PWM — chân 4</td><td>Hàng V+</td><td>Hàng GND</td></tr>
+                                <tr><td><code>CH5</code></td><td>Kẹp (Gripper)</td><td>Hàng PWM — chân 5</td><td>Hàng V+</td><td>Hàng GND</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="info-box compact" style="margin-top: 16px;">
+                    <div class="info-box-header">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        <span>Lưu ý quan trọng</span>
+                    </div>
+                    <p>Mỗi kênh servo trên PCA9685 có <strong>3 chân</strong> xếp thành 1 cột: <strong>PWM</strong> (tín hiệu), <strong>V+</strong> (nguồn), <strong>GND</strong> (mass). Cắm đầu cáp servo đúng chiều — dây nâu/đen quay về phía GND (mép board ngoài).</p>
                 </div>
             </section>
 
@@ -599,6 +733,52 @@ void loop() {
                 </div>
             </section>
 
+            <!-- SECTION: Video hướng dẫn -->
+            <section id="video-tutorials" class="doc-section">
+                <div class="section-header">
+                    <span class="section-number">7</span>
+                    <div>
+                        <h2 class="section-title">Video hướng dẫn</h2>
+                        <p class="section-subtitle">Các video YouTube minh họa trực quan</p>
+                    </div>
+                </div>
+
+                <div class="video-grid">
+                    <div class="video-card">
+                        <div class="video-wrapper">
+                            <iframe src="https://www.youtube.com/embed/y8X9X10Tn1k" title="Controlling 32 Servo motors with PCA9685 and ESP32" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h4>Điều khiển Servo với PCA9685 & ESP32</h4>
+                            <p>Hướng dẫn chi tiết đấu nối và lập trình PCA9685 với ESP32, điều khiển nhiều servo cùng lúc.</p>
+                            <span class="video-channel">RoboJAX</span>
+                        </div>
+                    </div>
+
+                    <div class="video-card">
+                        <div class="video-wrapper">
+                            <iframe src="https://www.youtube.com/embed/bvqfv-FrrLM" title="Control Servo over WiFi using ESP32 and PCA9685" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h4>Điều khiển Servo qua WiFi</h4>
+                            <p>Mở rộng điều khiển servo từ xa qua giao diện web trên điện thoại hoặc máy tính.</p>
+                            <span class="video-channel">RoboJAX</span>
+                        </div>
+                    </div>
+
+                    <div class="video-card">
+                        <div class="video-wrapper">
+                            <iframe src="https://www.youtube.com/embed/uW-N5_lXWvI" title="ESP32 Robot Arm with PCA9685" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+                        </div>
+                        <div class="video-info">
+                            <h4>Dự án cánh tay Robot với ESP32</h4>
+                            <p>Video thực hành lắp ráp và điều khiển cánh tay robot sử dụng ESP32-CAM và PCA9685.</p>
+                            <span class="video-channel">Jonathan Randall</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- SECTION: Tài liệu tham khảo -->
             <section id="references" class="doc-section">
                 <div class="section-header">
@@ -697,12 +877,15 @@ void loop() {
 
         const sectionNames = {
             'hero': 'Giới thiệu',
+            'fundamentals': 'Kiến thức nền',
             'hardware': 'Phân tích Phần cứng',
+            'servo-wiring': 'Sơ đồ nối Servo ↔ PCA',
             'power-warning': 'Cảnh báo Nguồn điện',
-            'wiring': 'Sơ đồ Đấu dây',
+            'wiring': 'Sơ đồ Đấu dây I2C',
             'source-code': 'Mã nguồn điều khiển',
             'code-explanation': 'Giải thích mã nguồn',
             'troubleshooting': 'Gỡ lỗi',
+            'video-tutorials': 'Video hướng dẫn',
             'references': 'Tài liệu tham khảo'
         };
 
